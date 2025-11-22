@@ -1,0 +1,19 @@
+import java.util.List;
+
+public class detallada implements Reportestrategy {
+    
+    @Override
+    public String reporte(List<ParAsociado<Equipo, Mantenimiento>> dato) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("=== REPORTE DETALLADO (Orden de Registro) ===\n\n");
+        if (dato.isEmpty()) sb.append("(Inventario vacío)\n");
+
+        for (ParAsociado<Equipo, Mantenimiento> par : dato) {
+            sb.append("EQUIPO: ").append(par.getPrimero().toString()).append("\n");
+            sb.append("   -> MANTENIMIENTO: ").append(par.getSegundo().toString()).append("\n");
+            sb.append("--------------------------------------------------\n");
+        }
+        return sb.toString(); // Retornamos el texto para que la Vista lo pinte
+    }
+}
+
