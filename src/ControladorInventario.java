@@ -39,7 +39,7 @@ public class ControladorInventario {
     // ==========================================
     public void setEstrategiaReporte(Reportestrategy estrategia) {
         this.estrategiaReporte = estrategia;
-        notificar("CONFIGURACIÓN", "Estrategia cambiada a: " + estrategia.getClass().getSimpleName());
+        notificar("CONFIGURACIÓN", "Vista cambiada a: " + estrategia.getName());
     }
 
     public String obtenerReporteGenerado() {

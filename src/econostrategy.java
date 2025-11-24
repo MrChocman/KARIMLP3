@@ -2,6 +2,12 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 public class econostrategy implements Reportestrategy{
+    private String name = "Reporte Económico (Mayor a menor costo)";
+
+    public String getName() {
+        return name;
+    }
+    
     @Override
     public String reporte(List<ParAsociado<Equipo, Mantenimiento>> dato) {
         StringBuilder sb = new StringBuilder();

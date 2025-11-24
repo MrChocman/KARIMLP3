@@ -3,6 +3,12 @@ import java.util.Comparator;
 import java.util.List;
 public class cronoestrate implements Reportestrategy{
     
+    private String name = "Reporte Cronológico (Fecha)";
+
+    public String getName() {
+        return name;
+    }
+
     @Override
     public String reporte(List<ParAsociado<Equipo, Mantenimiento>> dato){
         StringBuilder sb = new StringBuilder();

@@ -59,8 +59,8 @@ public class VistaInventario extends JFrame implements Inventariobserver {
         menuBar.add(menuAcciones);
 
         // Menú 2: Visualización (Strategy)
-        JMenu menuVer = new JMenu("Cambiar Estrategia (Strategy)");
-        menuVer.add(crearItem("Vista Detallada (Default)", e -> cambiarEstrategia(new detallada())));
+        JMenu menuVer = new JMenu("Cambiar Vista de Registros de Inventario");
+        menuVer.add(crearItem("Vista Detallada (Predeterminado))", e -> cambiarEstrategia(new detallada())));
         menuVer.add(crearItem("Vista Compacta (A-Z)", e -> cambiarEstrategia(new ordenalfaestra())));
         menuVer.add(crearItem("Cronología (Fecha)", e -> cambiarEstrategia(new cronoestrate())));
         menuVer.add(crearItem("Financiero (Costo)", e -> cambiarEstrategia(new econostrategy())));
@@ -195,11 +195,12 @@ public class VistaInventario extends JFrame implements Inventariobserver {
                 String nombre = tNom.getText();
                 String tipo = tTipo.getText().isEmpty() ? "General" : tTipo.getText();
                 String desc = tDesc.getText();
+                String Tec = tTec.getText().isEmpty() ? "Tecnico de Turno" : tTec.getText();
                 String costoTxt = tCos.getText().isEmpty() ? "0" : tCos.getText();
 
                 // Crear objetos con los IDs calculados
                 Equipo e = new Equipo(nuevoIdEquipo, nombre, tipo);
-                Mantenimiento m = new Mantenimiento(nuevoIdMant, desc, "Técnico de Turno", LocalDate.now(), Double.parseDouble(costoTxt));
+                Mantenimiento m = new Mantenimiento(nuevoIdMant, desc, Tec, LocalDate.now(), Double.parseDouble(costoTxt));
                 
                 controller.registrarAsociacion(e, m);
             } catch (Exception ex) { 

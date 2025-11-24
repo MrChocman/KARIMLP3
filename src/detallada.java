@@ -1,6 +1,11 @@
 import java.util.List;
 
 public class detallada implements Reportestrategy {
+    private String name = "Reporte Detallado";
+
+    public String getName() {
+        return name;
+    }
     
     @Override
     public String reporte(List<ParAsociado<Equipo, Mantenimiento>> dato) {

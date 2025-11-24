@@ -2,6 +2,13 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 public class ordenalfaestra implements Reportestrategy{
+
+    private String name = "Reporte Compacto (A-Z por Equipo)";
+    
+    public String getName() {
+        return name;
+    }
+    
     @Override
     public String reporte(List<ParAsociado<Equipo, Mantenimiento>> dato) {
         StringBuilder sb = new StringBuilder();
