@@ -18,7 +18,7 @@ public class detallada implements Reportestrategy {
             sb.append("   -> MANTENIMIENTO: ").append(par.getSegundo().toString()).append("\n");
             sb.append("--------------------------------------------------\n");
         }
-        return sb.toString(); // Retornamos el texto para que la Vista lo pinte
+        return sb.toString(); 
     }
 }
 

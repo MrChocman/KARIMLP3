@@ -15,7 +15,7 @@ public class Equipo {
 
     @Override
     public String toString() {
-        // Formato: "ID - Nombre (Tipo)"
+        
         return String.format("%d - %s (%s)", id, nombre, tipo);
     }
 }

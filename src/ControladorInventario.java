@@ -39,7 +39,7 @@ public class ControladorInventario {
         return repositorio.listar();
     }
 
-    // NEGOCIO
+    
     public void registrarAsociacion(Equipo e, Mantenimiento m) {
         repositorio.agregar(e, m);
         notificar("NUEVO REGISTRO", "Equipo Registrado: " + e.getNombre());

@@ -27,7 +27,7 @@ public class Mantenimiento {
 
     @Override
     public String toString() {
-        // Formato: "Mantenimiento [ID]: Descripcion, por [Tecnico] en [Fecha] (S/ Costo)"
+        
         return String.format("Mantenimiento [%d]: %s, por %s en %s (S/ %.2f)",
                 id, descripcion, tecnico, fecha.toString(), costo);
     }

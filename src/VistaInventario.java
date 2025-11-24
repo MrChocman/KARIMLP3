@@ -3,7 +3,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.time.LocalDate;
-import java.util.List; // Import necesario para listar y buscar el ID máximo
+import java.util.List; 
 import javax.swing.BorderFactory;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -21,17 +21,14 @@ public class VistaInventario extends JFrame implements Inventariobserver {
 
     private ControladorInventario controller;
     
-    // Componente central para el reporte
+
     private JTextArea areaReportePrincipal; 
 
     public VistaInventario(ControladorInventario controller) {
         this.controller = controller;
-        // Suscribirse antes de iniciar
         this.controller.agregarObservador(this);
         
         initComponentes();
-        
-        // Cargar el reporte inicial
         actualizarPanelReporte();
     }
 
@@ -41,10 +38,10 @@ public class VistaInventario extends JFrame implements Inventariobserver {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
-        // --- MENÚ ---
+        //MENU
         JMenuBar menuBar = new JMenuBar();
 
-        // Menú 1: Gestión
+        //AGRUPAMIENTO EN GESTION
         JMenu menuAcciones = new JMenu("Gestión");
         menuAcciones.add(crearItem("Registrar Nuevo Equipo", e -> registrarMantenimiento()));
         menuAcciones.add(crearItem("Actualizar Datos", e -> actualizarEquipo()));
@@ -58,7 +55,7 @@ public class VistaInventario extends JFrame implements Inventariobserver {
         menuAcciones.add(crearItem("Salir", e -> System.exit(0)));
         menuBar.add(menuAcciones);
 
-        // Menú 2: Visualización (Strategy)
+        //AGRUPAMENTO EN VISTA
         JMenu menuVer = new JMenu("Cambiar Vista de Registros de Inventario");
         menuVer.add(crearItem("Vista Detallada (Predeterminado))", e -> cambiarEstrategia(new detallada())));
         menuVer.add(crearItem("Vista Compacta (A-Z)", e -> cambiarEstrategia(new ordenalfaestra())));
@@ -68,11 +65,11 @@ public class VistaInventario extends JFrame implements Inventariobserver {
 
         setJMenuBar(menuBar);
 
-        // --- PANEL CENTRAL ---
+
         areaReportePrincipal = new JTextArea();
         areaReportePrincipal.setEditable(false);
         areaReportePrincipal.setFont(new Font("Monospaced", Font.PLAIN, 14));
-        areaReportePrincipal.setBackground(new Color(250, 250, 250)); // Fondo blanco humo
+        areaReportePrincipal.setBackground(new Color(250, 250, 250));
         areaReportePrincipal.setForeground(Color.BLACK);
         areaReportePrincipal.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
 
@@ -88,7 +85,6 @@ public class VistaInventario extends JFrame implements Inventariobserver {
         return item;
     }
 
-    // --- MÉTODOS DE ACTUALIZACIÓN VISUAL ---
 
     private void cambiarEstrategia(Reportestrategy nuevaEstrategia) {
         controller.setEstrategiaReporte(nuevaEstrategia);
@@ -99,30 +95,31 @@ public class VistaInventario extends JFrame implements Inventariobserver {
         areaReportePrincipal.setText(reporte);
     }
 
-    // --- IMPLEMENTACIÓN DEL OBSERVER ---
+    //OBSERVER
     @Override
     public void cambioinventario(String evento, String detalle) {
         SwingUtilities.invokeLater(() -> {
             
-            // 1. Mostrar el Pop-up (Notificación)
+            // POP UP DE NOTIFICACION
             int tipo = JOptionPane.INFORMATION_MESSAGE;
             if(evento.contains("ERROR")) tipo = JOptionPane.ERROR_MESSAGE;
             else if(evento.contains("LIMPIEZA") || evento.contains("ELIMINACIÓN")) tipo = JOptionPane.WARNING_MESSAGE;
             
             JOptionPane.showMessageDialog(this, detalle, "Notificación: " + evento, tipo);
 
-            // 2. ACTUALIZAR EL TEXTO DEL CENTRO AUTOMÁTICAMENTE
+            // ACTUALIZA EL PANEL
             actualizarPanelReporte();
         });
     }
 
-
+    //LIMPIA TODO
     private void limpiar() {
         if (JOptionPane.showConfirmDialog(this, "¿Borrar todo?", "Confirmar", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
             controller.limpiarInventario();
         }
     }
     
+    //ELIMINAR EQUIPO POR ID
     private void eliminarEquipo() {
         String id = JOptionPane.showInputDialog("ID a eliminar:");
         if (id != null && !id.trim().isEmpty()) {
@@ -134,6 +131,7 @@ public class VistaInventario extends JFrame implements Inventariobserver {
         }
     }
     
+    //ACTUALIZAR EQUIPO
     private void actualizarEquipo() {
         JPanel p = new JPanel(new GridLayout(0, 2));
         JTextField tId = new JTextField();
@@ -152,7 +150,7 @@ public class VistaInventario extends JFrame implements Inventariobserver {
         int res = JOptionPane.showConfirmDialog(this, p, "Editar Registro Completo", JOptionPane.OK_CANCEL_OPTION);
         if (res == JOptionPane.OK_OPTION) {
             try { 
-                // Pasamos los strings directos al controlador para que él decida si mantener o cambiar
+
                 controller.actualizarEquipo(
                     Integer.parseInt(tId.getText()), 
                     tNom.getText(), 
@@ -166,6 +164,8 @@ public class VistaInventario extends JFrame implements Inventariobserver {
         }
     }
 
+
+    //REGISTRAR MANTENIMIENTO
     private void registrarMantenimiento() {
         JPanel p = new JPanel(new GridLayout(0,2, 5, 5)); // Grid con espaciado
         
@@ -184,12 +184,11 @@ public class VistaInventario extends JFrame implements Inventariobserver {
 
         if (JOptionPane.showConfirmDialog(this, p, "Registrar Nuevo Equipo", JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION) {
             try {
-                // --- LÓGICA DE ID AUTO-INCREMENTAL ---
+                // ID AUTO-INCREMENTADA
                 List<ParAsociado<Equipo, Mantenimiento>> listaActual = controller.listarAsociaciones();
                 int maxIdEquipo = 0;
                 int maxIdMant = 0;
 
-                // Buscamos los IDs más altos existentes
                 for (ParAsociado<Equipo, Mantenimiento> par : listaActual) {
                     if (par.getPrimero().getId() > maxIdEquipo) {
                         maxIdEquipo = par.getPrimero().getId();
@@ -199,11 +198,9 @@ public class VistaInventario extends JFrame implements Inventariobserver {
                     }
                 }
 
-                // El nuevo ID es el máximo encontrado + 1
-                // Si la lista está vacía, maxIdEquipo es 0, por lo tanto el primero será 1.
                 int nuevoIdEquipo = maxIdEquipo + 1;
                 int nuevoIdMant = maxIdMant + 1;
-                // -------------------------------------
+
 
                 String nombre = tNom.getText();
                 String tipo = tTipo.getText().isEmpty() ? "General" : tTipo.getText();
@@ -211,7 +208,6 @@ public class VistaInventario extends JFrame implements Inventariobserver {
                 String Tec = tTec.getText().isEmpty() ? "Tecnico de Turno" : tTec.getText();
                 String costoTxt = tCos.getText().isEmpty() ? "0" : tCos.getText();
 
-                // Crear objetos con los IDs calculados
                 Equipo e = new Equipo(nuevoIdEquipo, nombre, tipo);
                 Mantenimiento m = new Mantenimiento(nuevoIdMant, desc, Tec, LocalDate.now(), Double.parseDouble(costoTxt));
                 
