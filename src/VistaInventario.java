@@ -160,11 +160,13 @@ public class VistaInventario extends JFrame implements Inventariobserver {
         JTextField tNom = new JTextField();
         JTextField tTipo = new JTextField(); 
         JTextField tDesc = new JTextField();
+        JTextField tTec = new JTextField();
         JTextField tCos = new JTextField();
         
         p.add(new JLabel("Nombre Equipo:")); p.add(tNom);
         p.add(new JLabel("Tipo Equipo:")); p.add(tTipo); 
         p.add(new JLabel("Desc. Mant:")); p.add(tDesc);
+        p.add(new JLabel("Técnico:")); p.add(tTec);
         p.add(new JLabel("Costo:")); p.add(tCos);
 
         if (JOptionPane.showConfirmDialog(this, p, "Registrar Nuevo Equipo", JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION) {

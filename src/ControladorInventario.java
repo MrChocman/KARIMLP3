@@ -8,7 +8,6 @@ public class ControladorInventario {
     private RepositorioArchivo repositorio;
     private RepositorioBD repositorioBD;
     
-    // 1. LISTA DE OBSERVADORES (Suscriptores)
     private List<Inventariobserver> observadores = new ArrayList<>();
     
     // 2. ESTRATEGIA ACTUAL (Cómo generar reportes)
