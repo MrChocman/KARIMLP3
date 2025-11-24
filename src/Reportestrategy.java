@@ -1,3 +1,5 @@
+//REALIZADO POR: XIOMARA NUÑEZ CCUPA
+
 import java.util.List;
 interface Reportestrategy {
     String getName();

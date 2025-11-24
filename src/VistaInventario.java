@@ -1,3 +1,6 @@
+//REALIZADO POR: VICTOR PIMENTEL ROMERO
+
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
