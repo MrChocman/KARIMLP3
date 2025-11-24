@@ -116,7 +116,6 @@ public class VistaInventario extends JFrame implements Inventariobserver {
         });
     }
 
-    // --- ACCIONES DE GESTIÓN ---
 
     private void limpiar() {
         if (JOptionPane.showConfirmDialog(this, "¿Borrar todo?", "Confirmar", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
@@ -140,15 +139,29 @@ public class VistaInventario extends JFrame implements Inventariobserver {
         JTextField tId = new JTextField();
         JTextField tNom = new JTextField();
         JTextField tTip = new JTextField();
+        JTextField tDesc = new JTextField();
+        JTextField tCos = new JTextField();  
+
+
         p.add(new JLabel("ID Buscar:")); p.add(tId);
         p.add(new JLabel("Nuevo Nombre:")); p.add(tNom);
         p.add(new JLabel("Nuevo Tipo:")); p.add(tTip);
+        p.add(new JLabel("Nueva Desc. (Dejar vacío = mantener):")); p.add(tDesc);
+        p.add(new JLabel("Nuevo Costo (Dejar vacío = mantener):")); p.add(tCos);
         
-        if (JOptionPane.showConfirmDialog(this, p, "Actualizar", JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION) {
+        int res = JOptionPane.showConfirmDialog(this, p, "Editar Registro Completo", JOptionPane.OK_CANCEL_OPTION);
+        if (res == JOptionPane.OK_OPTION) {
             try { 
-                controller.actualizarEquipo(Integer.parseInt(tId.getText()), tNom.getText(), tTip.getText()); 
-            } catch (Exception e) { 
-                JOptionPane.showMessageDialog(this, "Error en datos"); 
+                // Pasamos los strings directos al controlador para que él decida si mantener o cambiar
+                controller.actualizarEquipo(
+                    Integer.parseInt(tId.getText()), 
+                    tNom.getText(), 
+                    tTip.getText(),
+                    tDesc.getText(),
+                    tCos.getText()
+                ); 
+            } catch (NumberFormatException e) { 
+                JOptionPane.showMessageDialog(this, "Error: El ID debe ser numérico."); 
             }
         }
     }

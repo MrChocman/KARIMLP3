@@ -1,0 +1,3 @@
+2,Epson l350,Impresora,2,Cambio de tinta,Tecnico de Turno,2025-11-23,230.0
+3,Samsung A55,Smartphone,3,Revision tecnica,Patricio,2025-11-23,100.0
+1,Rog Strix ,Laptop,1,Cambio de pasta termica,Jose Espinoza,2025-11-23,200.0

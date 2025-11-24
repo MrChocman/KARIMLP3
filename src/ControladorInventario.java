@@ -1,5 +1,3 @@
-import java.io.IOException;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,125 +5,129 @@ public class ControladorInventario {
 
     private RepositorioArchivo repositorio;
     private RepositorioBD repositorioBD;
-    
     private List<Inventariobserver> observadores = new ArrayList<>();
-    
-    // 2. ESTRATEGIA ACTUAL (Cómo generar reportes)
     private Reportestrategy estrategiaReporte;
 
     public ControladorInventario(String archivo) {
         this.repositorio = new RepositorioArchivo(archivo);
         this.repositorioBD = new RepositorioBD();
-        // Estrategia por defecto
         this.estrategiaReporte = new detallada(); 
     }
 
-    // ==========================================
-    // LÓGICA OBSERVER (Notificaciones)
-    // ==========================================
+    //OBSERVER
     public void agregarObservador(Inventariobserver obs) {
         observadores.add(obs);
     }
 
-    // Método privado que avisa a todos los observadores registrados
     private void notificar(String evento, String detalle) {
         for (Inventariobserver obs : observadores) {
             obs.cambioinventario(detalle, detalle);
         }
     }
 
-    // ==========================================
-    // LÓGICA STRATEGY (Visualización)
-    // ==========================================
+    //STRATEGY
     public void setEstrategiaReporte(Reportestrategy estrategia) {
         this.estrategiaReporte = estrategia;
-        notificar("CONFIGURACIÓN", "Vista cambiada a: " + estrategia.getName());
+        notificar("VISUALIZACIÓN", "Vista cambiada a: " + estrategia.getName());
     }
 
     public String obtenerReporteGenerado() {
         return estrategiaReporte.reporte(repositorio.listar());
     }
+    
+    public List<ParAsociado<Equipo, Mantenimiento>> listarAsociaciones() {
+        return repositorio.listar();
+    }
 
-    // ==========================================
-    // MÉTODOS DE NEGOCIO (CON NOTIFICACIONES)
-    // ==========================================
-
-    // CASO 1 Y 4: REGISTRO DE EQUIPO Y MANTENIMIENTO
+    // NEGOCIO
     public void registrarAsociacion(Equipo e, Mantenimiento m) {
         repositorio.agregar(e, m);
-        // Notificamos dos cosas como piden los requerimientos
-        notificar("NUEVO EQUIPO", "Registrado: " + e.getNombre() + " (" + e.getTipo() + ")");
-        notificar("MANTENIMIENTO", "Asignado a ID " + e.getId() + ": " + m.getDescripcion());
+        notificar("NUEVO REGISTRO", "Equipo Registrado: " + e.getNombre());
     }
 
-    // CASO 2: ELIMINAR EQUIPO (Búsqueda manual con FOR)
     public void eliminarEquipoPorId(int id) {
         List<ParAsociado<Equipo, Mantenimiento>> lista = repositorio.listar();
-        ParAsociado<Equipo, Mantenimiento> aBorrar = null;
-        
-        // Buscamos manualmente sin Predicates
+        ParAsociado<Equipo, Mantenimiento> borrar = null;
         for (ParAsociado<Equipo, Mantenimiento> par : lista) {
             if (par.getPrimero().getId() == id) {
-                aBorrar = par;
-                break; // Encontramos el primero y salimos
+                borrar = par;
+                break;
             }
         }
-        
-        if (aBorrar != null) {
-            repositorio.eliminarObjeto(aBorrar);
-            notificar("ELIMINACIÓN", "Equipo ID " + id + " eliminado del inventario.");
+        if (borrar != null) {
+            repositorio.eliminarObjeto(borrar);
+            notificar("ELIMINACIÓN", "ID " + id + " eliminado correctamente.");
         } else {
-            notificar("ERROR", "Intento de eliminar ID " + id + " fallido: No encontrado.");
+            notificar("ERROR", "No se encontró el ID " + id);
         }
     }
 
-    // CASO 3: ACTUALIZAR DATOS DE EQUIPO (Búsqueda manual con FOR)
-    public void actualizarEquipo(int id, String nuevoNombre, String nuevoTipo) {
+    
+    public void actualizarEquipo(int id, String nuevoNombre, String nuevoTipo, String nuevaDesc, String nuevoCostoStr) {
         List<ParAsociado<Equipo, Mantenimiento>> lista = repositorio.listar();
-        ParAsociado<Equipo, Mantenimiento> parEncontrado = null;
+        ParAsociado<Equipo, Mantenimiento> encontrado = null;
         
-        // 1. Buscamos el registro
+
         for (ParAsociado<Equipo, Mantenimiento> par : lista) {
             if (par.getPrimero().getId() == id) {
-                parEncontrado = par;
+                encontrado = par;
                 break;
             }
         }
         
-        if (parEncontrado != null) {
-            // 2. Como Equipo no tiene setters, creamos uno nuevo con los datos actualizados
-            // y conservamos el mantenimiento original
-            Equipo equipoViejo = parEncontrado.getPrimero();
-            Mantenimiento mant = parEncontrado.getSegundo();
+        if (encontrado != null) {
+            Equipo viejoE = encontrado.getPrimero();
+            Mantenimiento viejoM = encontrado.getSegundo();
+
+
+            String nombreFinal = (nuevoNombre == null || nuevoNombre.trim().isEmpty()) ? viejoE.getNombre() : nuevoNombre;
+            String tipoFinal = (nuevoTipo == null || nuevoTipo.trim().isEmpty()) ? viejoE.getTipo() : nuevoTipo;
+            String descFinal = (nuevaDesc == null || nuevaDesc.trim().isEmpty()) ? viejoM.getDescripcion() : nuevaDesc;
             
-            Equipo equipoNuevo = new Equipo(id, nuevoNombre, nuevoTipo);
+            double costoFinal = viejoM.getCosto();
+            if (nuevoCostoStr != null && !nuevoCostoStr.trim().isEmpty()) {
+                try {
+                    costoFinal = Double.parseDouble(nuevoCostoStr);
+                } catch(NumberFormatException e) {
+
+                }
+            }
+
+
+            repositorio.eliminarObjeto(encontrado);
             
-            // 3. Reemplazamos en el repositorio (borrar viejo, poner nuevo)
-            repositorio.eliminarObjeto(parEncontrado);
-            repositorio.agregar(equipoNuevo, mant);
+
+            Equipo equipoNuevo = new Equipo(id, nombreFinal, tipoFinal);
             
-            notificar("ACTUALIZACIÓN", "Equipo ID " + id + " modificado. Nombre anterior: " + equipoViejo.getNombre());
+
+            Mantenimiento mantNuevo = new Mantenimiento(
+                viejoM.getId(), 
+                descFinal, 
+                viejoM.getTecnico(), 
+                viejoM.getFecha(), 
+                costoFinal
+            );
+
+            repositorio.agregar(equipoNuevo, mantNuevo);
+            
+            notificar("ACTUALIZACIÓN", "Registro ID " + id + " actualizado con éxito.");
         } else {
-            notificar("ERROR", "No se pudo actualizar ID " + id + ": No existe.");
+            notificar("ERROR", "No se encontró el equipo con ID " + id);
         }
     }
 
-    // CASO 6: LIMPIEZA TOTAL
     public void limpiarInventario() {
-        int cantidad = repositorio.listar().size();
         repositorio.limpiar();
-        notificar("LIMPIEZA TOTAL", "Se han borrado " + cantidad + " registros de la memoria.");
+        notificar("LIMPIEZA", "Se ha vaciado todo el inventario.");
     }
 
-    // CASO 5: CARGA Y GUARDADO
     public boolean guardarArchivo() {
         try {
             repositorio.guardarEnArchivo();
-            notificar("PERSISTENCIA", "Inventario exportado a archivo TXT correctamente.");
+            notificar("ARCHIVO", "Datos guardados en TXT.");
             return true;
-        } catch (IOException e) {
-            notificar("ERROR CRÍTICO", "Fallo al guardar archivo: " + e.getMessage());
-            e.printStackTrace();
+        } catch(Exception e) {
+            notificar("ERROR", e.getMessage());
             return false;
         }
     }
@@ -133,31 +135,22 @@ public class ControladorInventario {
     public boolean cargarArchivo() {
         try {
             repositorio.cargarDesdeArchivo();
-            int total = repositorio.listar().size();
-            notificar("CARGA DATOS", "Importación completada. Registros en memoria: " + total);
+            notificar("ARCHIVO", "Datos cargados desde TXT.");
             return true;
-        } catch (IOException | ClassNotFoundException e) {
-            notificar("ERROR CRÍTICO", "Fallo al leer archivo: " + e.getMessage());
-            e.printStackTrace();
+        } catch(Exception e) {
+            notificar("ERROR", e.getMessage());
             return false;
         }
     }
 
     public boolean guardarEnBD() {
-        notificar("BASE DE DATOS", "Iniciando transacción con la BD...");
         try {
-            boolean exito = repositorioBD.guardarAsociacionesEnBD(repositorio.listar());
-            if (exito) notificar("BASE DE DATOS", "Sincronización exitosa.");
-            else notificar("BASE DE DATOS", "Operación cancelada (Rollback).");
-            return exito;
-        } catch (SQLException e) {
-            notificar("ERROR SQL", "Excepción en BD: " + e.getMessage());
-            e.printStackTrace();
+            boolean ok = repositorioBD.guardarAsociacionesEnBD(repositorio.listar());
+            notificar("BASE DATOS", ok ? "Sincronización completada." : "Fallo en sincronización.");
+            return ok;
+        } catch(Exception e) {
+            notificar("ERROR BD", e.getMessage());
             return false;
         }
-    }
-
-    public List<ParAsociado<Equipo, Mantenimiento>> listarAsociaciones() {
-        return repositorio.listar();
     }
 }
