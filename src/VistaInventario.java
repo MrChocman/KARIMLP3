@@ -105,7 +105,7 @@ public class VistaInventario extends JFrame implements Inventariobserver {
             if(evento.contains("ERROR")) tipo = JOptionPane.ERROR_MESSAGE;
             else if(evento.contains("LIMPIEZA") || evento.contains("ELIMINACIÓN")) tipo = JOptionPane.WARNING_MESSAGE;
             
-            JOptionPane.showMessageDialog(this, detalle, "Notificación: " + evento, tipo);
+            JOptionPane.showMessageDialog(this, detalle, "Notificación: ", tipo);
 
             // ACTUALIZA EL PANEL
             actualizarPanelReporte();
@@ -184,7 +184,7 @@ public class VistaInventario extends JFrame implements Inventariobserver {
 
         if (JOptionPane.showConfirmDialog(this, p, "Registrar Nuevo Equipo", JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION) {
             try {
-                // ID AUTO-INCREMENTADA
+                // ID DE AUTOINCREMENTO
                 List<ParAsociado<Equipo, Mantenimiento>> listaActual = controller.listarAsociaciones();
                 int maxIdEquipo = 0;
                 int maxIdMant = 0;
